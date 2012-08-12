@@ -4,6 +4,8 @@ import wikipedia # Import the wikipedia module
 import pagegenerators
 import codecs
 import imagetransfer
+import catlib
+
 
 def genNoInterwikidata(toSite = False):
 	mypage = u"ഉപയോക്താവ്:Manubot/Nointerwiki"
@@ -143,6 +145,23 @@ def ChangeCinemaInfobox():
 		f.close()
 		# break
 			
+         
+def list_with_no_link(lang,category,file):
+	interlang = 'ml'
+	if(lang == 'ml'):
+		interlang = 'en'
+	f = codecs.open(file+u'.txt',encoding='utf-8', mode='w')
+	site = wikipedia.getSite(lang,'wikipedia') # Taking the default site
+	cat = catlib.Category(site,category)
+	gen = pagegenerators.CategorizedPageGenerator(cat,True)
+	for page in gen:
+		print "Processing "+ page.title().encode('utf-8')
+		x = [a for a in page.interwiki() if a.site().language() == interlang]
+		if(len(x) == 0):
+			f.write(page.title()+u"\n")
+	f.close()	  
+
+	         
 if __name__ == '__main__':
 	# imageTransfer('en:File:')
 	genNoInterwikidata(True)
@@ -150,3 +169,12 @@ if __name__ == '__main__':
 	genNoInterwikiPerson(True)
 	# addlog("Testing")
 	# ChangeCinemaInfobox()
+   
+   lang = 'ml'
+	cat = u'വർഗ്ഗം:മലയാളചലച്ചിത്ര അഭിനേതാക്കൾ'
+	file = 'not_in_en_wiki'
+	# lang = 'en'
+	# cat = 'Category:Malayalam_film_actors'
+	# file = 'not_in_mal_wiki'
+	
+	list_with_no_link(lang,cat,file)
